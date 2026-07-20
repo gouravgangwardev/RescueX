@@ -1,0 +1,43 @@
+<div id="seq1"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    actorBkg: dark ? '#3C3489' : '#EEEDFE',
+    actorBorder: dark ? '#AFA9EC' : '#534AB7',
+    actorTextColor: dark ? '#EEEDFE' : '#26215C',
+    signalColor: dark ? '#9c9a92' : '#73726c',
+    signalTextColor: dark ? '#c2c0b6' : '#3d3d3a',
+    noteBkgColor: dark ? '#085041' : '#E1F5EE',
+    noteBorderColor: dark ? '#5DCAA5' : '#0F6E56',
+    noteTextColor: dark ? '#E1F5EE' : '#04342C',
+  },
+});
+const { svg } = await mermaid.render('seq1-svg', `sequenceDiagram
+  participant U as User app
+  participant B as Backend API
+  participant P as Priority engine
+  participant D as Dashboard
+  participant V as Volunteer
+  U->>B: POST /sos/trigger (location, profile)
+  B->>P: Score urgency
+  P-->>B: priority_score
+  B->>B: Save SOS_Request
+  B->>U: Multi-format alert (voice/text/vibration)
+  B->>D: Push live SOS to map
+  B->>V: Auto-notify nearest volunteer (SMS)
+  V-->>B: Acknowledge
+  B-->>U: Status: acknowledged
+`);
+document.getElementById('seq1').innerHTML = svg;
+</script>

@@ -1,0 +1,46 @@
+<div id="seq2"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    actorBkg: dark ? '#712B13' : '#FAECE7',
+    actorBorder: dark ? '#F0997B' : '#993C1D',
+    actorTextColor: dark ? '#FAECE7' : '#4A1B0C',
+    signalColor: dark ? '#9c9a92' : '#73726c',
+    signalTextColor: dark ? '#c2c0b6' : '#3d3d3a',
+    noteBkgColor: dark ? '#085041' : '#E1F5EE',
+    noteBorderColor: dark ? '#5DCAA5' : '#0F6E56',
+    noteTextColor: dark ? '#E1F5EE' : '#04342C',
+  },
+});
+const { svg } = await mermaid.render('seq2-svg', `sequenceDiagram
+  participant Do as Donor
+  participant B as Backend API
+  participant DB as Database
+  participant N as NGO/Volunteer
+  Do->>B: POST /donation/create (item, target group, location)
+  B->>DB: Save donation (status: available)
+  B-->>Do: Confirmation
+  N->>B: GET /donation/nearby
+  B->>DB: Query by location/filters
+  DB-->>B: Matching donations
+  B-->>N: List of available donations
+  N->>B: POST /donation/claim/{id}
+  B->>DB: Save claim, update status
+  B-->>N: Claim confirmed + donor contact
+  B-->>Do: Notify: item claimed
+  N->>B: PUT /donation/status/{id} (collected)
+  B->>DB: Update status
+`);
+document.getElementById('seq2').innerHTML = svg;
+</script>
